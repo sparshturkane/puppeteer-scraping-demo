@@ -36,7 +36,7 @@ async function run() {
   const searchUrl = `https://github.com/search?q=${userToSearch}&type=Users&utf8=%E2%9C%93`;
 
   await page.goto(searchUrl);
-  await page.waitFor(2 * 1000);
+  // await page.waitFor(2 * 1000);
 
 
   let listLength = await page.evaluate((sel) => {
@@ -44,6 +44,30 @@ async function run() {
   }, LENGTH_SELECTOR_CLASS);
 
   console.log(listLength);
+
+  for (let i = 1; i < listLength + 1; i++) {
+    console.log(i);
+    // changeing the index to next child
+    let usernameSelector = LIST_USERNAME_SELECTOR.replace("INDEX", i);
+    let emailSelector = LIST_EMAIL_SELECTOR.replace("INDEX", i);
+
+    let username = await page.evaluate((sel) => {
+      return document.querySelector(sel).getAttribute('href').replace('/', '');
+    }, usernameSelector);
+
+    let email = await page.evaluate((sel) => {
+      let element = document.querySelector(sel);
+      return element ? element.innerHTML : null;
+    }, emailSelector);
+
+    // not all users have emails visible
+    if (!email)
+      continue;
+
+    console.log(username, ' -> ', email);
+  }
+
+
 
   //await page.screenshot({ path: 'screenshots/github.png' });
 
