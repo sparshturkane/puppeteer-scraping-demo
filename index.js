@@ -39,33 +39,46 @@ async function run() {
   // await page.waitFor(2 * 1000);
 
 
-  let listLength = await page.evaluate((sel) => {
-    return document.getElementsByClassName(sel).length;
-  }, LENGTH_SELECTOR_CLASS);
 
-  console.log(listLength);
 
-  for (let i = 1; i < listLength + 1; i++) {
-    console.log(i);
-    // changeing the index to next child
-    let usernameSelector = LIST_USERNAME_SELECTOR.replace("INDEX", i);
-    let emailSelector = LIST_EMAIL_SELECTOR.replace("INDEX", i);
 
-    let username = await page.evaluate((sel) => {
-      return document.querySelector(sel).getAttribute('href').replace('/', '');
-    }, usernameSelector);
 
-    let email = await page.evaluate((sel) => {
-      let element = document.querySelector(sel);
-      return element ? element.innerHTML : null;
-    }, emailSelector);
+  for (let h = 1; h <= 100; h++) {
+    let pageUrl = searchUrl + '&p=' + h;
+    await page.goto(pageUrl)
 
-    // not all users have emails visible
-    if (!email)
-      continue;
+    let listLength = await page.evaluate((sel) => {
+      return document.getElementsByClassName(sel).length;
+    }, LENGTH_SELECTOR_CLASS);
 
-    console.log(username, ' -> ', email);
+    console.log(listLength);
+
+
+    for (let i = 1; i <= listLength; i++) {
+      console.log(i);
+      // changeing the index to next child
+      let usernameSelector = LIST_USERNAME_SELECTOR.replace("INDEX", i);
+      let emailSelector = LIST_EMAIL_SELECTOR.replace("INDEX", i);
+
+      let username = await page.evaluate((sel) => {
+        return document.querySelector(sel).getAttribute('href').replace('/', '');
+      }, usernameSelector);
+
+      let email = await page.evaluate((sel) => {
+        let element = document.querySelector(sel);
+        return element ? element.innerHTML : null;
+      }, emailSelector);
+
+      // not all users have emails visible
+      if (!email)
+        continue;
+
+      console.log(username, ' -> ', email);
+    }
+
   }
+
+
 
 
 
@@ -76,6 +89,11 @@ async function run() {
 
 run();
 
+async function getNumPages(page) {
+  console.log("====================== getNumPages HIT =======================");
+
+
+}
 // (async () => {
 //   const browser = await puppeteer.launch({
 //     headless: false
